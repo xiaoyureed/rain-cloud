@@ -1,0 +1,104 @@
+server:
+  port: 8888
+#  servlet:
+#    context-path: /@artifactId@
+spring:
+  application:
+    name: @artifactId@
+  cloud:
+    loadbalancer:
+      cache:
+        enabled: false # default to true; 关闭 lb 的缓存
+    gateway:
+      enabled: true # default
+      httpclient:
+        connect-timeout: 1000 # 1s
+        response-timeout: 5s  # 5s
+      # 默认即被应用到所有 route 的 filter
+      #default-filters:
+      discovery:
+        locator:
+          enabled: false   #开启网关拉取nacos 动态路由
+          lower-case-service-id: true # default to false
+      #filter.rewrite-path.enabled: false # default to true
+      routes:
+        - id: service-biz-hello
+          uri: lb://service-biz-hello
+          predicates:
+            - Path=/service-biz-hello/** # 等同Path=xxx,true 表示请求路径末尾的"/"模糊匹配, 即无论是否有 "/" 都能匹配, Path=xxx,false 表示严格匹配  --> https://stackoverflow.com/questions/62493309/whats-the-use-of-matchoptionaltrailingseparator-in-spring-cloud-gateway-predica
+          #filters:
+          #  - RewritePath=/service-biz-hello/?(?<remaining>.*), /$\{remaining}
+
+        - id: example-spring-cloud-nacos
+          uri: lb://example-spring-cloud-nacos
+          predicates:
+            - Path=/example-spring-cloud-nacos/**
+
+
+        - id: blog
+          uri: https://xiaoyureed.github.io
+          predicates:
+            - name: Path
+              args:
+                pattern: /blog  # notice: the slash at the end is sensitive
+                matchOptionalTrailingSeparator: true # 表示请求路径末尾的"/"模糊匹配
+
+        # proxy baidu
+        - id: baidu
+          uri: https://www.baidu.com
+          predicates:
+            - Path=/baidu/
+
+        # redirect baidu
+        - id: baidu-redirect
+          uri: https://www.Abaidu.com
+          predicates:
+            - Path=/redirect/**
+          filters:
+            - name: RedirectTo
+              args:
+                status: 301
+                url: https://www.Bbaidu.com # redirect to this url, make sure this url is correct
+
+    nacos:
+      server-addr: 127.0.0.1:8848
+      username: nacos
+      password: nacos
+      config:
+        enabled: true
+        refresh-enabled: true # 是否动态刷新,默认为false
+        server-addr: ${spring.cloud.nacos.server-addr}
+        username: ${spring.cloud.nacos.username}
+        password: ${spring.cloud.nacos.password}
+        file-extension: yaml
+        namespace: dev
+        # 支持多个共享dataId的配置，优先级小于extension-configs,shared-configs是一个集合
+        shared-configs:
+          # 网关 通用配置可以定义在这个里面
+          - dataId: demo-gateway.yaml # 配置文件名dataId
+            group: DEFAULT_GROUP  # 默认为DEFAULT_GROUP
+      discovery:
+        enabled: true
+        register-enabled: true # default. allow you to omit @enablediscoveryclient
+        server-addr: ${spring.cloud.nacos.server-addr}
+        username: ${spring.cloud.nacos.username}
+        password: ${spring.cloud.nacos.password}
+        namespace: dev
+
+
+  profiles:
+    active: local
+logging:
+  level:
+    root: info
+    io.github.xiaoyureed.raincloud: debug
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.client: DEBUG
+management:
+  endpoint:
+    gateway:
+      enabled: true # default to false
+  endpoints:
+    web:
+      exposure:
+        include: "health,gateway"

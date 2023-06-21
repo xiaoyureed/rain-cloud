@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>service-biz</artifactId>
+        <groupId>io.github.xiaoyureed.raincloud</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>service-biz-hello</artifactId>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>io.github.xiaoyureed.raincloud</groupId>
+            <artifactId>core-starter-database-mybatis-mysql</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.xiaoyureed.raincloud</groupId>
+            <artifactId>core-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.xiaoyureed.raincloud</groupId>
+            <artifactId>core-starter-banner</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.xiaoyureed.raincloud</groupId>
+            <artifactId>core-starter-cache</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.xiaoyureed.raincloud</groupId>
+            <artifactId>service-api-hello</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.xiaoyureed.raincloud</groupId>
+            <artifactId>core-starter-registry-nacos</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.xiaoyureed.raincloud</groupId>
+            <artifactId>core-starter-redis</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot-maven-plugin.version}</version>
+                <configuration>
+                    <outputDirectory>../../boot-jars</outputDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,20 @@
+server:
+  port: 7000
+spring:
+  application:
+    name: @artifactId@
+nacos:
+  server-addr: 127.0.0.1:8848
+  username: nacos
+  password: nacos
+  config:
+    server-addr: ${nacos.server-addr}
+    namespace: example
+    username: ${nacos.username}
+    password: ${nacos.password}
+  discovery:
+    server-addr: ${nacos.server-addr}
+    namespace: example
+    password: ${nacos.password}
+    username: ${nacos.username}
+

@@ -1,0 +1,46 @@
+server:
+  port: 8000
+  servlet:
+    context-path: /@artifactId@
+spring:
+  application:
+    name: @artifactId@
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+      username: nacos
+      password: nacos
+      config:
+        enabled: true
+        server-addr: ${spring.cloud.nacos.server-addr}
+        username: ${spring.cloud.nacos.username}
+        password: ${spring.cloud.nacos.password}
+        namespace: dev
+        file-extension: yml
+        #        shared-configs: # 共享配置
+        #            - dataId: database-dev.yaml
+        #              group: DEFAULT_GROUP
+        #              refresh: true
+      discovery:
+        enabled: true
+        server-addr: ${spring.cloud.nacos.server-addr}
+        username: ${spring.cloud.nacos.username}
+        password: ${spring.cloud.nacos.password}
+        namespace: dev
+
+
+  profiles:
+    active: local
+
+logging:
+  level:
+    root: info
+    io.github.xiaoyureed.raincloud: debug
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: '*'

@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    dynamic:
+#      druid: # Druid 【连接池】相关的全局配置
+#        initial-size: 5 # 初始连接数
+#        min-idle: 10 # 最小连接池数量
+#        max-active: 20 # 最大连接池数量
+#        max-wait: 600000 # 配置获取连接等待超时的时间，单位：毫秒
+#        time-between-eviction-runs-millis: 60000 # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位：毫秒
+#        min-evictable-idle-time-millis: 300000 # 配置一个连接在池中最小生存的时间，单位：毫秒
+#        max-evictable-idle-time-millis: 900000 # 配置一个连接在池中最大生存的时间，单位：毫秒
+#        validation-query: SELECT 1 FROM DUAL # 配置检测连接是否有效
+#        test-while-idle: true
+#        test-on-borrow: false
+#        test-on-return: false
+      primary: master
+      datasource:
+        master:
+          name: raincloud-hello
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          # MySQL Connector/J 8.X 连接的示例
+          url: jdbc:mysql://127.0.0.1:3306/${spring.datasource.dynamic.datasource.master.name}?allowMultiQueries=true&useUnicode=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&autoReconnect=true&nullCatalogMeansCurrent=true
+          username: root
+          password: root
+        slave:
+          name: raincloud-hello
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          # MySQL Connector/J 8.X 连接的示例
+          url: jdbc:mysql://127.0.0.1:3306/${spring.datasource.dynamic.datasource.slave.name}?allowMultiQueries=true&useUnicode=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&autoReconnect=true&nullCatalogMeansCurrent=true
+          username: root
+          password: root
+springdoc:
+  swagger-ui:
+    disable-swagger-default-url: true

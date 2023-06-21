@@ -1,0 +1,39 @@
+server:
+  port: 7001
+  servlet:
+    context-path: /@artifactId@
+spring:
+  application.name: @artifactId@
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+      username: nacos
+      password: nacos
+      config:
+        enabled: true
+        refresh-enabled: true # 是否动态刷新,默认为false
+        server-addr: ${spring.cloud.nacos.server-addr}
+        username: ${spring.cloud.nacos.username}
+        password: ${spring.cloud.nacos.password}
+        namespace: example
+        # default to "properties" , dataId format: ${prefix}-${spring.profiles.active}.${file-extension}, spring.profiles.active 为空时，对应的连接符 - 也将不存在，dataId 的拼接格式变成 ${prefix}.${file-extension}
+        file-extension: yaml
+        prefix: ${spring.application.name} # 默认值
+        shared-configs:
+          # 网关 通用配置可以定义在这个里面
+          - dataId: demo-gateway.yaml # 配置文件名dataId
+            group: DEFAULT_GROUP  # 默认为DEFAULT_GROUP
+        # 优先级大于 shared-configs，在 shared-configs 之后加载
+        # 排在后⾯的相同配置，将覆盖排在前⾯的同名配置。(数组元素对应的下标越⼤，优先级越⾼)
+        # 不同种类配置之间，优先级按顺序如下：主配置 > 扩展配置(extension-configs) > 共享配置(shared-configs)
+        extension-configs:
+          - data-id: example.yaml # have to specify the suffix
+            refresh: true # default to false
+            #group: DEFAULT_GROUP # default
+      discovery:
+        enabled: true
+        register-enabled: true # now you can omit @enablediscoveryclient
+        server-addr: ${spring.cloud.nacos.server-addr}
+        username: ${spring.cloud.nacos.username}
+        password: ${spring.cloud.nacos.password}
+        namespace: example

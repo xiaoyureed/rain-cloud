@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.1.0</version>
+    </parent>
+
+    <groupId>io.github.xiaoyureed.raincloud</groupId>
+    <artifactId>rain-cloud</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <packaging>pom</packaging>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!--keep it the same with spring boot version-->
+        <spring-boot-maven-plugin.version>3.1.0</spring-boot-maven-plugin.version>
+        <native-maven-plugin.version>0.9.23</native-maven-plugin.version>
+    </properties>
+
+    <modules>
+        <module>service-biz</module>
+        <module>core</module>
+        <module>service-api</module>
+        <module>service-support</module>
+<!--        <module>example</module>-->
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.github.xiaoyureed.raincloud</groupId>
+                <artifactId>core-dependencies</artifactId>
+                <version>1.0-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!--This two dependencies is used to make the lombok @slf4j using easier for every single modules -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!-- maven渲染配置文件
+        Handling the placeholder in application.yml.
+        The sub application module will extend this setup
+        -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+<!--                <includes>-->
+<!--                    <include>META-INF/*</include>-->
+<!--                </includes>-->
+            </resource>
+        </resources>
+    </build>
+
+</project>
