@@ -1,5 +1,30 @@
 server:
   port: 7002
+
 spring:
   application:
     name: @artifactId@
+
+raincloud:
+  openapi:
+    url: http://localhost:7002
+    version: 1.0
+
+springdoc:
+  api-docs:
+    enabled: true # default; 开关 json 格式 api 文档, 必须开启, 否则 swagger ui 无法渲染
+    path: /v3/api-docs # default; 控制 json 格式 api 文档路径
+  swagger-ui:
+    enabled: true # default;
+    disable-swagger-default-url: true # default to false; don't allow show example apis
+    path: /swagger-ui.html # default; 会重定向到 index.html
+    use-root-path: false # default; 是否使用根路径作为 swagger ui, 默认是 /swagger-ui 作为路径
+    csrf:
+      enabled: true # default to false;
+    url: ${springdoc.api-docs.path}
+
+  show-actuator: true # default to false; 开启显示 actuator apis
+  show-login-endpoint: true # default to false; make spring security login-endpoint visible
+
+
+

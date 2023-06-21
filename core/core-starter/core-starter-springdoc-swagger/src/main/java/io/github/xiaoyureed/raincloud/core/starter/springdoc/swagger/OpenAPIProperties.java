@@ -10,7 +10,6 @@ import lombok.Data;
 @ConfigurationProperties("raincloud.openapi")
 @Data
 public class OpenAPIProperties {
-    private String title;
     private String version;
     private String url;
 }
