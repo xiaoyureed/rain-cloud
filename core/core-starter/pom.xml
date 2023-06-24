@@ -25,8 +25,9 @@
         <module>core-starter-security</module>
         <module>core-starter-test</module>
         <module>core-starter-web</module>
-        <module>core-starter-web-static</module>
         <module>core-starter-springdoc-swagger</module>
+        <module>core-starter-job</module>
+        <module>core-starter-extension</module>
     </modules>
 
     <dependencies>

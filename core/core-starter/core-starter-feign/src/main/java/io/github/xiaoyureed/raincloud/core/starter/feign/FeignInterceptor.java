@@ -19,10 +19,10 @@ public class FeignInterceptor implements RequestInterceptor {
     public void apply(RequestTemplate requestTemplate) {
         ServletUtils.getRequestHeaders().forEach(requestTemplate::header);
 
-        // feign request flag
+        // Set up the feign request flag
         requestTemplate.header(Consts.Web.HeaderNames.REQUEST_HEADER_FEIGN_FLAG, String.valueOf(true));
 
-        // request id
+        // Set up the request id
         if (ServletUtils.getRequestHeader(Consts.Web.HeaderNames.REQUEST_HEADER_ID) == null) {
             requestTemplate.header(Consts.Web.HeaderNames.REQUEST_HEADER_ID, String.valueOf(UUID.randomUUID()));
         }

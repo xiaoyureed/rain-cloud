@@ -3,19 +3,19 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>core-starter</artifactId>
+        <artifactId>core-starter-extension</artifactId>
         <groupId>io.github.xiaoyureed.raincloud</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>core-starter-mq</artifactId>
+    <artifactId>core-starter-extension-excel</artifactId>
 
-    <packaging>pom</packaging>
-
-    <modules>
-        <module>core-starter-mq-kafka</module>
-        <module>core-starter-mq-rocketmq</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

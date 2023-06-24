@@ -9,13 +9,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>core-starter-mq</artifactId>
+    <artifactId>core-starter-job</artifactId>
 
     <packaging>pom</packaging>
-
     <modules>
-        <module>core-starter-mq-kafka</module>
-        <module>core-starter-mq-rocketmq</module>
+        <module>core-starter-job-xxl</module>
     </modules>
-
 </project>
