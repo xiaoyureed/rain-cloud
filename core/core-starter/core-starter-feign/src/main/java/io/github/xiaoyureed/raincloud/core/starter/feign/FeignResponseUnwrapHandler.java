@@ -21,17 +21,26 @@ import lombok.extern.slf4j.Slf4j;
 public class FeignResponseUnwrapHandler implements ResponseBodyAdvice<Object> {
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        log.debug("!!! " + this.getClass().getSimpleName() + "is supported");
+        log.debug("!!! " + this.getClass().getSimpleName() + "is in use");
         return true;
     }
 
     @Override
-    public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
-        boolean feign = StringUtils.isNotBlank(ServletUtils.getRequestHeader(Consts.Web.HeaderNames.REQUEST_HEADER_FEIGN_FLAG));
+    public Object beforeBodyWrite(
+        Object body, MethodParameter returnType, MediaType selectedContentType,
+        Class<? extends HttpMessageConverter<?>> selectedConverterType,
+        ServerHttpRequest request, ServerHttpResponse response
+    ) {
+        // Check if this request is the internal one
+        boolean feign = StringUtils.isNotBlank(
+            ServletUtils.getRequestHeader(Consts.Web.HeaderNames.REQUEST_HEADER_FEIGN_FLAG)
+        );
+
         if (feign) {
             return body;
         }
 
+        // todo
         return body;
 
     }

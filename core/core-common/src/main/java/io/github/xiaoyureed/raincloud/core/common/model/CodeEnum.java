@@ -11,9 +11,11 @@ import lombok.Getter;
 public enum CodeEnum {
 
     SUCCESS("SUCCESS", "success"),
-    RESOURCES_NOT_EXIST("RESOURCES_NOT_EXIST", "The resources requested don't exist."),
+
     BIZ_ERROR("BIZ_ERROR", "Business error."),
+
     SYSTEM_ERROR("SYSTEM_ERROR", "SYSTEM ERROR"),
+    RESOURCES_NOT_EXIST("RESOURCES_NOT_EXIST", "The resources requested don't exist."),
     ILLEGAL_ARGUMENT("ILLEGAL_ARGUMENT", "参数不合法"),
     METHOD_NOT_ALLOWED("METHOD_NOT_ALLOWED", "请求方法不允许"),
 

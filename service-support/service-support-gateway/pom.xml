@@ -42,6 +42,16 @@
             <artifactId>core-starter-banner</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.github.xiaoyureed.raincloud</groupId>
+            <artifactId>core-starter-redis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.xiaoyureed.raincloud</groupId>
+            <artifactId>core-starter-common</artifactId>
+        </dependency>
+
 <!--        <dependency>-->
 <!--            <groupId>com.alibaba.cloud</groupId>-->
 <!--            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>-->

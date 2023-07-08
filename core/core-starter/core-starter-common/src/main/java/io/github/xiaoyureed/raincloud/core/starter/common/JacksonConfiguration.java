@@ -34,7 +34,7 @@ public class JacksonConfiguration {
 
     @Bean
     @Primary
-    public ObjectMapper objectMapper() {
+    public ObjectMapper jacksonObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
@@ -47,10 +47,10 @@ public class JacksonConfiguration {
 
 //        如果是作为api返回结果，不需要反序列化时：不设置activateDefaultTyping或者使用EXISTING_PROPERTY。
 //        如果作为缓存等，需要反序列化时：一般使用 WRAPPER_ARRAY、WRAPPER_OBJECT、PROPERTY中的一种。如果不指定则默认使用的是WRAPPER_ARRAY。
-        objectMapper.activateDefaultTyping(objectMapper.getPolymorphicTypeValidator(),
-            ObjectMapper.DefaultTyping.NON_FINAL,
-            JsonTypeInfo.As.WRAPPER_ARRAY // 默认值, 可省略, 序列化后的 json 是一个数组, 两个元素, 第一个是全类名, 第二个是 json 对象
-        );
+//        objectMapper.activateDefaultTyping(objectMapper.getPolymorphicTypeValidator(),
+//            ObjectMapper.DefaultTyping.NON_FINAL,
+//            JsonTypeInfo.As.WRAPPER_ARRAY // 默认值, 可省略, 序列化后的 json 是一个数组, 两个元素, 第一个是全类名, 第二个是 json 对象
+//        );
 
 
         return objectMapper;

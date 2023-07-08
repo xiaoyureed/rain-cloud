@@ -1,80 +1,43 @@
-//package io.github.xiaoyureed.raincloud.core.common.util;
-//
-//import java.util.Objects;
-//
-//import org.springframework.http.HttpHeaders;
-//import org.springframework.http.server.reactive.ServerHttpRequest;
-//
-//import lombok.extern.slf4j.Slf4j;
-//
-///**
-// * IP 工具类
-// *
-// * @author 马士兵 · 项目架构部
-// * @version V1.0
-// * @contact zeroming@163.com
-// * @company 马士兵（北京）教育科技有限公司 (http://www.mashibing.com/)
-// * @copyright 马士兵（北京）教育科技有限公司 · 项目架构部
-// */
-//@Slf4j
-//public class IpUtils {
-//
-//    private static final String X_FORWARDED_FOR = "x-forwarded-for";
-//    private static final String PROXY_CLIENT_IP = "Proxy-Client-IP";
-//    private static final String WL_PROXY_CLIENT_IP = "WL-Proxy-Client-IP";
-//    private static final String HTTP_CLIENT_IP = "HTTP_CLIENT_IP";
-//    private static final String HTTP_X_FORWARDED_FOR = "HTTP_X_FORWARDED_FOR";
-//    private static final String X_REAL_IP = "X-Real-IP";
-//    private static final String UNKNOWN = "unknown";
-//    private static final String SPLIT = ",";
-//
-//
-//    /**
-//     * 获取请求的真实IP
-//     *
-//     * @param request
-//     * @return
-//     */
-//    public static String getRealIp(ServerHttpRequest request) {
-//        HttpHeaders headers = request.getHeaders();
-//        String ip = headers.getFirst(X_FORWARDED_FOR);
-//        log.info("x-forwarded-for ip {}", headers.get(X_FORWARDED_FOR));
-//        log.info("X-Real-IP ip {}", headers.get(X_REAL_IP));
-//        if (ip != null && ip.length() != 0 && !UNKNOWN.equalsIgnoreCase(ip)) {
-//            log.debug("多次反向代理后会有多个ip值，第一个ip才是真实ip: {}", ip);
-//            // 多次反向代理后会有多个ip值，第一个ip才是真实ip
-//            boolean contains = ip.contains(SPLIT);
-//            if (contains) {
-//                ip = ip.split(",")[0];
-//            }
-//        }
-//        if (checkIp(ip)) {
-//            ip = headers.getFirst(PROXY_CLIENT_IP);
-//            log.info("PROXY_CLIENT_IP: {}", ip);
-//        }
-//        if (checkIp(ip)) {
-//            ip = headers.getFirst(WL_PROXY_CLIENT_IP);
-//            log.info("WL_PROXY_CLIENT_IP: {}", ip);
-//        }
-//        if (checkIp(ip)) {
-//            ip = headers.getFirst(HTTP_CLIENT_IP);
-//            log.info("HTTP_CLIENT_IP: {}", ip);
-//        }
-//        if (checkIp(ip)) {
-//            ip = headers.getFirst(HTTP_X_FORWARDED_FOR);
-//            log.info("HTTP_X_FORWARDED_FOR: {}", ip);
-//        }
-//        if (checkIp(ip)) {
-//            ip = headers.getFirst(X_REAL_IP);
-//            log.info("X_REAL_IP: {}", ip);
-//        }
-//        if (checkIp(ip)) {
-//            ip = Objects.requireNonNull(request.getRemoteAddress()).getAddress().getHostAddress();
-//        }
-//        return ip;
-//    }
-//
-//    private static boolean checkIp(String ip) {
-//        return ip == null || ip.length() == 0 || UNKNOWN.equalsIgnoreCase(ip);
-//    }
-//}
+package io.github.xiaoyureed.raincloud.core.common.util;
+
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+public final class IpUtils {
+    /**
+     * X-Forwarded-For是用于记录代理信息的,每经过一级代理，该字段就会记录来源地址,经过多级代理，服务端就会记录每级代理的X-Forwarded-For信息，IP之间以“，”分隔开。
+     * 所以，我们只要获取X-Forwarded-For中的第一个IP，就是用户的真实IP。
+     */
+    public static String getIpFromRequest(HttpServletRequest request) {
+
+        String ip = request.getHeader("X-Forwarded-For");
+
+        if (StringUtils.isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
+            return null;
+        }
+
+        int index = ip.indexOf(',');
+
+        if (index == -1) {
+            return ip;
+        }
+
+        //只获取第一个值
+        return ip.substring(0, index);
+    }
+
+    public static String getSelfIp() {
+        try {
+            return Inet4Address.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            //todo
+            throw new RuntimeException(e);
+        }
+    }
+
+}

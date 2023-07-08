@@ -1,7 +1,7 @@
 server:
   port: 8000
-  servlet:
-    context-path: /@artifactId@
+#  servlet:
+#    context-path: /@artifactId@
 spring:
   application:
     name: @artifactId@
@@ -44,3 +44,16 @@ management:
     web:
       exposure:
         include: '*'
+
+# 性能调优
+#https://www.bilibili.com/video/BV1S84y1v77y
+server.tomcat:
+  threads:
+    max: 200 # default to 200; 限制 worker thread 总数, 一般是 核数*200, 如 4c8g (4核8G) 的机器为 800; 操作系统做线程切换调度是有消耗的, 所以不是越大越好
+    min-spare: 10 # default to 10; 最小空闲线程; 可以增大以应对突增的访问量
+  accept-count: 100 # default to 100; 请求的等待缓冲队列, 超过 tomcat max-connections 的请求会进入; 不能无限长, 会消耗内存cpu
+  max-connections: 8192
+spring.cloud.openfeign:
+  httpclient:
+    max-connections: 200 # 限制 http Client 调用连接池大小, 正常小于 Tomcat 的 最大 worker thread
+    max-connections-per-route: 50 # 限制对每个服务地址的子连接池连接数, 是从 max-connections 划分出来的

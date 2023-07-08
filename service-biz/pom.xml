@@ -15,6 +15,7 @@
 
     <modules>
         <module>service-biz-hello</module>
+        <module>service-biz-account</module>
     </modules>
 
     <dependencies>

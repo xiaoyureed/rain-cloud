@@ -14,8 +14,8 @@ public class SpringBootApplication {
         SpringApplication.run(SpringBootApplication.class, args);
     }
 
-    @GetMapping({"/i"})
+    @GetMapping({"/index"})
     public String index() {
-        return "index";
+        return "index from example spring boot";
     }
 }

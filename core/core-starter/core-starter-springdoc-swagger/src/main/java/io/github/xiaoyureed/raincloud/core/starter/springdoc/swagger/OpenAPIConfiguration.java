@@ -13,10 +13,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import io.github.xiaoyureed.raincloud.core.common.util.IpUtils;
 import io.github.xiaoyureed.raincloud.core.starter.common.util.SpringContextUtils;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
@@ -31,6 +33,17 @@ import lombok.extern.slf4j.Slf4j;
  * <p>
  * https://blog.csdn.net/shijizhe1/article/details/130495081
  * https://www.baeldung.com/spring-rest-openapi-documentation
+ *
+ * @Api → @Tag
+ * @ApiIgnore → @Parameter(hidden = true) or @Operation(hidden = true) or @Hidden
+ * @ApiImplicitParam → @Parameter
+ * @ApiImplicitParams → @Parameters
+ * @ApiModel → @Schema
+ * @ApiModelProperty(hidden = true) → @Schema(accessMode = READ_ONLY)
+ * @ApiModelProperty → @Schema
+ * @ApiOperation(value = "foo", notes = "bar") → @Operation(summary = "foo", description = "bar")
+ * @ApiParam → @Parameter
+ * @ApiResponse(code = 404, message = "foo") → @ApiResponse(responseCode = "404", description = "foo")
  */
 @Configuration
 @OpenAPIDefinition
@@ -46,23 +59,38 @@ public class OpenAPIConfiguration {
     @Value("${spring.application.name:unknown}")
     private String applicationName;
 
+    @Value("${servlet.port:8080}")
+    private String port;
+
 
     @Bean
     public OpenAPI openAPI() {
         return new OpenAPI()
-            .servers(List.of(new Server().url(openAPIProperties.getUrl())))   // the server url will be auto generated
+            // the server url will be auto generated if you haven't specified it
+            //默认情况下，Server 地址是获取的当前机器应用的 IP+Port，但是现如今除开发环境外我们服务几乎都是在 Docker 容器中，
+            // 这样一来自动获取的时候可能会拿到容器内部的 IP 或者 宿主机 IP，此时使用 swagger 页面访问接口可能会发生 CORS 跨域错误。
+            // 所以我们可以在向 Spring 容器注入 OpenAPI 时自己设置 server 列表
+//            .servers(List.of(
+//                new Server().url(IpUtils.getSelfIp() + ":" + port)
+//            ))
+            // todo 暂时这样写, 解决swagger 跨域
+            .servers(List.of(
+                new Server().url("http://localhost:8888/" + applicationName)
+            ))
             .externalDocs(externalDocumentation())
             .info(info());
 
     }
 
+    /**
+     * 用来在代码中自定义springdoc 配置
+     */
 //    @Bean
 //    public SpringDocConfigProperties springDocConfigProperties(SpringDocConfigProperties config) {
 //        config.setApiDocs();
 //
 //        return config;
 //    }
-
 //    @Bean
 //    public SwaggerUiConfigProperties swaggerUiConfigProperties(SwaggerUiConfigProperties config) {
 //        return config

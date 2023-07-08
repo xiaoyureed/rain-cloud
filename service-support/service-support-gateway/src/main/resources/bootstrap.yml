@@ -5,10 +5,14 @@ server:
 spring:
   application:
     name: @artifactId@
+  main:
+    allow-bean-definition-overriding: true # default to false; 允许 bean 定义覆盖
   cloud:
     loadbalancer:
       cache:
         enabled: false # default to true; 关闭 lb 的缓存
+      retry:
+        enabled: true # default to true
     gateway:
       enabled: true # default
       httpclient:
@@ -18,47 +22,57 @@ spring:
       #default-filters:
       discovery:
         locator:
-          enabled: false   #开启网关拉取nacos 动态路由
+          enabled: true   #开启服务发现, 网关会拉取nacos 动态路由, 无需手动配置路由了
           lower-case-service-id: true # default to false
-      #filter.rewrite-path.enabled: false # default to true
-      routes:
-        - id: service-biz-hello
-          uri: lb://service-biz-hello
-          predicates:
-            - Path=/service-biz-hello/** # 等同Path=xxx,true 表示请求路径末尾的"/"模糊匹配, 即无论是否有 "/" 都能匹配, Path=xxx,false 表示严格匹配  --> https://stackoverflow.com/questions/62493309/whats-the-use-of-matchoptionaltrailingseparator-in-spring-cloud-gateway-predica
-          #filters:
-          #  - RewritePath=/service-biz-hello/?(?<remaining>.*), /$\{remaining}
-
-        - id: example-spring-cloud-nacos
-          uri: lb://example-spring-cloud-nacos
-          predicates:
-            - Path=/example-spring-cloud-nacos/**
-
-
-        - id: blog
-          uri: https://xiaoyureed.github.io
-          predicates:
-            - name: Path
-              args:
-                pattern: /blog  # notice: the slash at the end is sensitive
-                matchOptionalTrailingSeparator: true # 表示请求路径末尾的"/"模糊匹配
-
-        # proxy baidu
-        - id: baidu
-          uri: https://www.baidu.com
-          predicates:
-            - Path=/baidu/
-
-        # redirect baidu
-        - id: baidu-redirect
-          uri: https://www.Abaidu.com
-          predicates:
-            - Path=/redirect/**
+          #route-id-prefix: my-route-   # default to "route-"; 若不指定 route id, 这个配置用来指定自动生成的id 前缀, 方便日志监控中识别路由
           filters:
-            - name: RedirectTo
-              args:
-                status: 301
-                url: https://www.Bbaidu.com # redirect to this url, make sure this url is correct
+            - StripPrefix=1
+      filter:
+        rewrite-path:
+          enabled: true # default;
+    #      routes:
+#        - id: service-biz-hello
+#          uri: lb://service-biz-hello
+#          predicates:
+#            - Path=/service-biz-hello/** # 等同Path=xxx,true 表示请求路径末尾的"/"模糊匹配, 即无论是否有 "/" 都能匹配, Path=xxx,false 表示严格匹配  --> https://stackoverflow.com/questions/62493309/whats-the-use-of-matchoptionaltrailingseparator-in-spring-cloud-gateway-predica
+#          #filters:
+#          #  - RewritePath=/service-biz-hello/?(?<remaining>.*), /$\{remaining}
+#
+#        - id: openapi-self
+#          uri: lb://service-support-gateway
+#          predicates:
+#            - Path=/service-support-gateway/**
+#
+#        - id: example-spring-cloud-nacos
+#          uri: lb://example-spring-cloud-nacos
+#          predicates:
+#            - Path=/example-spring-cloud-nacos/**
+#
+#
+#        - id: blog
+#          uri: https://xiaoyureed.github.io
+#          predicates:
+#            - name: Path
+#              args:
+#                pattern: /blog  # notice: the slash at the end is sensitive
+#                matchOptionalTrailingSeparator: true # 表示请求路径末尾的"/"模糊匹配
+#
+#        # proxy baidu
+#        - id: baidu
+#          uri: https://www.baidu.com
+#          predicates:
+#            - Path=/baidu/
+#
+#        # redirect baidu
+#        - id: baidu-redirect
+#          uri: https://www.Abaidu.com
+#          predicates:
+#            - Path=/redirect/**
+#          filters:
+#            - name: RedirectTo
+#              args:
+#                status: 301
+#                url: https://www.Bbaidu.com # redirect to this url, make sure this url is correct
 
     nacos:
       server-addr: 127.0.0.1:8848
@@ -102,3 +116,23 @@ management:
     web:
       exposure:
         include: "*"
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    disable-swagger-default-url: true # disable the example api doc
+    csrf:
+      enabled: true
+  webjars:
+    prefix: /doc # default to "/webjars"
+
+raincloud:
+  gateway:
+    auth:
+      enabled: false
+    white-list:
+      - "/oauth2/**"
+      - "/v3/api-docs/**"
+      - "/openapi*"
+      - "/open/**"

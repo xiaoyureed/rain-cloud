@@ -11,12 +11,6 @@
 
     <artifactId>service-biz-hello</artifactId>
 
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <dependencies>
 
         <dependency>
@@ -52,6 +46,11 @@
         <dependency>
             <groupId>io.github.xiaoyureed.raincloud</groupId>
             <artifactId>core-starter-redis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.xiaoyureed.raincloud</groupId>
+            <artifactId>core-starter-feign</artifactId>
         </dependency>
 
     </dependencies>

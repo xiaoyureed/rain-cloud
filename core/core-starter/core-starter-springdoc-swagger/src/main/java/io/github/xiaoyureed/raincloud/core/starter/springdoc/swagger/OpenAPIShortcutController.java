@@ -23,6 +23,9 @@ public class OpenAPIShortcutController {
         this.environment = environment;
     }
 
+    /**
+     * swagger document 根路径快速跳转
+     */
     @GetMapping("/")
     public void index(HttpServletResponse response) throws IOException {
         String contextPath = environment.getProperty("server.servlet.context-path");

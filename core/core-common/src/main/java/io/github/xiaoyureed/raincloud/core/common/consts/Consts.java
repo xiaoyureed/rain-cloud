@@ -9,6 +9,9 @@ public interface Consts {
         interface HeaderNames {
             String REQUEST_HEADER_FEIGN_FLAG = "x-feign";
             String REQUEST_HEADER_ID = "x-request-id";
+            String REQUEST_HEADER_TOKEN = "x-token";
+
+            String REQUEST_HEADER_IP = "x-ip";
         }
     }
 
