@@ -14,5 +14,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>service-support-gateway</module>
+        <module>service-support-auth-server</module>
     </modules>
 </project>

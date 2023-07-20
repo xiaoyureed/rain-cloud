@@ -2,13 +2,10 @@ package io.github.xiaoyureed.raincloud.core.starter.redis.cache.expire;
 
 import java.util.Stack;
 
-import lombok.experimental.UtilityClass;
-
 /**
  * 缓存过期Holder
  *
  */
-@UtilityClass
 public class CacheExpireHolder {
 
     /**

@@ -2,7 +2,6 @@ package io.github.xiaoyureed.raincloud.core.starter.redis.cache.expire;
 
 /**
  * 常用时间段（对应秒数）
- *
  */
 public final class Time {
 

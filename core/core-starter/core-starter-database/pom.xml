@@ -16,6 +16,7 @@
         <module>core-starter-database-mybatis-mysql</module>
         <module>core-starter-database-jpa-postgres</module>
         <module>core-starter-database-jpa-h2</module>
+        <module>core-starter-database-cqrs</module>
     </modules>
 
 </project>

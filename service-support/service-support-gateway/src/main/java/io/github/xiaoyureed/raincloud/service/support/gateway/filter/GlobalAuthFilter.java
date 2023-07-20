@@ -36,6 +36,10 @@ public class GlobalAuthFilter implements GlobalFilter, Ordered {
     @Resource
     private RedisTemplate<Object, Object> redisTemplate;
 
+    {
+        log.debug("!!! GlobalAuthFilter in use!");
+    }
+
     /**
      * 说明：目前所有请求均是通过Gateway进行访问。
      * /oauth/check_token，是比较特殊的地址，不是使用token的方式进行鉴权。
@@ -46,11 +50,10 @@ public class GlobalAuthFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
-        log.debug("!!! GlobalAuthFilter in use!");
-
         String url = exchange.getRequest().getURI().getPath();
 
         if (!gatewaySecurityProperties.getAuth().isEnabled()) {
+            log.warn("!!! gateway auth is disabled");
             return chain.filter(exchange);
         }
 
@@ -64,9 +67,8 @@ public class GlobalAuthFilter implements GlobalFilter, Ordered {
         // 外部进入的请求，如果包含 x-feign 请求头，认为是非法请求，直接拦截。x-feign 只能用于内部 Feign 间忽略权限使用
         // If the request contains x-feign header, we assume that it's an illegal request
         //(since the x-feign header only appears in internal request)
-        String fromIn = exchange.getRequest().getHeaders()
-            .getFirst(Consts.Web.HeaderNames.REQUEST_HEADER_FEIGN_FLAG);
-        if (ObjectUtils.isNotEmpty(fromIn)) {
+        String internalFlag = exchange.getRequest().getHeaders().getFirst(Consts.Web.HeaderNames.REQUEST_HEADER_FEIGN_FLAG);
+        if (ObjectUtils.isNotEmpty(internalFlag)) {
             log.warn("!!! Illegal request to disable access!");
             ResponseWrapper<?> response = ResponseWrapper.error(CodeEnum.ILLEGAL_REQUEST, HttpStatus.FORBIDDEN);
 
@@ -81,11 +83,10 @@ public class GlobalAuthFilter implements GlobalFilter, Ordered {
 //        }
 
         // 3.非免登陆地址，获取token 检查token，如果为空，或者不是 Bearer XXX形式，则认为未授权。
-        String token = exchange.getRequest().getHeaders()
-            .getFirst(Consts.Web.HeaderNames.REQUEST_HEADER_TOKEN);
+        String token = exchange.getRequest().getHeaders().getFirst(Consts.Web.HeaderNames.REQUEST_HEADER_TOKEN);
         if (tokenNotWellFormed(token)) {
             log.warn("!!! Token is not Well Formed!");
-            ResponseWrapper<?> error = ResponseWrapper.error(CodeEnum.TOKEN_FAIL, HttpStatus.UNAUTHORIZED);
+            ResponseWrapper<?> error = ResponseWrapper.error(CodeEnum.TOKEN_FORMAT_ERROR, HttpStatus.UNAUTHORIZED);
 
             return WebFluxUtils.writeJsonResponse(exchange.getResponse(), error);
         }

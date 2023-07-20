@@ -38,6 +38,7 @@ https://juejin.cn/post/6844903641535479821
 -->
     <appender name="appender_console" class="ch.qos.logback.core.ConsoleAppender">
         <!--过滤日志, 低于这个级别的不会打印-->
+        <!-- OFF、FATAL、ERROR、WARN、INFO、DEBUG、TRACE、ALL     -->
 <!--        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
 <!--            <level>INFO</level>-->
 <!--        </filter>-->

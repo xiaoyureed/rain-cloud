@@ -11,42 +11,31 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class LoginUserContext {
-    private static final ThreadLocal<LoginUserInfo<Object>> USER_THREAD_LOCAL = new ThreadLocal<>();
+    private static final ThreadLocal<LoginUserInfo<?>> USER_THREAD_LOCAL = new ThreadLocal<>();
 
-    public static void set(LoginUserInfo<Object> user) {
+    public static void set(LoginUserInfo<?> user) {
         USER_THREAD_LOCAL.set(user);
     }
 
-    public static Optional<LoginUserInfo<Object>> get() {
-        try {
-            return Optional.of(USER_THREAD_LOCAL.get());
-        } catch (NoSuchElementException e) {
-            return Optional.empty();
-        }
+    public static Optional<LoginUserInfo<?>> get() {
+        return Optional.ofNullable(USER_THREAD_LOCAL.get());
     }
 
     public static boolean isLogin() {
         return get().isPresent();
     }
 
-    public static String getUserId() {
-        return getUserId(String.class);
-    }
+    public static <T> Optional<T> getUserId(Class<T> idType, boolean checkLoginState) {
+        Optional<LoginUserInfo<?>> info = get();
 
-    public static <T> T getUserId(Class<T> idType) {
-        if (!isLogin()) {
-            throw new SystemException(CodeEnum.SYSTEM_ERROR);
+        if (checkLoginState && info.isEmpty()) {
+            log.error("!!! No login info found in the thread local, considering check the aop configuration");
+            throw new SystemException(CodeEnum.ILLEGAL_LOGIN_STATE);
         }
 
-        Optional<LoginUserInfo<Object>> info = get();
-
-        return info.map(LoginUserInfo::getId)
+        return info.map(LoginUserInfo::identifier)
             .filter(idType::isInstance)
-            .map(idType::cast)
-            .orElseThrow(() -> {
-                log.error("!!! Error of casting ID to type [{}]", idType.getName());
-                return new SystemException("Error of casting");
-            });
+            .map(idType::cast);
     }
 
     public static void remove() {

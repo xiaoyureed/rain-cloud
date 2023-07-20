@@ -143,7 +143,7 @@ public class GlobalExceptionHandler {
     public ResponseWrapper<Void> handleException(Exception exception) {
         // 打印堆栈信息
         String exceptionMsgWithStack = getExceptionMsgWithStack(exception);
-        log.error("❌系统异常，请排查代码或数据，\uD83D\uDD17uri：{}，ℹ异常信息：{}", ServletUtils.getRequestInfo(), exceptionMsgWithStack, exception);
+        log.error("❌系统异常，请排查代码或数据，uri：{}，异常信息：{}", ServletUtils.getRequestInfo(), exceptionMsgWithStack, exception);
         // 生产上为了安全不响应给客户端，其他环境可以返回以提高排查效率
         return ResponseWrapper.error(CodeEnum.SYSTEM_ERROR.getCode(), SpringContextUtils.isProd() ? "" : exceptionMsgWithStack);
     }

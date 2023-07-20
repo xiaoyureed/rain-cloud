@@ -16,6 +16,10 @@
         <module>example-spring-boot-nacos</module>
         <module>example-spring-cloud-nacos</module>
         <module>example-spring-boot</module>
+        <module>example-spring-boot-security</module>
+        <module>example-spring-boot-kafka</module>
+        <module>example-spring-boot-redis</module>
+        <module>example-spring-boot-mybatis-mysql</module>
     </modules>
 
 </project>

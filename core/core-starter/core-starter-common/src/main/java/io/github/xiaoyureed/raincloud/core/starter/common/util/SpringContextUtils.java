@@ -1,6 +1,8 @@
 package io.github.xiaoyureed.raincloud.core.starter.common.util;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -60,30 +62,36 @@ public class SpringContextUtils implements ApplicationContextAware, EmbeddedValu
     /**
      * 获取当前profile
      */
-    public static String getProfile() {
-        String[] activeProfiles = context.getEnvironment().getActiveProfiles();
-        return activeProfiles.length == 0 ? "dev" : activeProfiles[0];
+    public static String getPrettyActiveProfiles() {
+        String[] activeProfiles = activeProfiles();
+
+//        return activeProfiles.length == 0 ? "dev" : activeProfiles[0];
+        return Arrays.stream(activeProfiles).collect(Collectors.joining(", ", "[", "]"));
+    }
+
+    public static String[] activeProfiles() {
+        return context.getEnvironment().getActiveProfiles();
     }
 
     /**
      * 当前环境是否是开发环境
      */
     public static boolean isDev() {
-        return "dev".equals(getProfile());
+        return Arrays.stream(activeProfiles()).anyMatch(p -> "dev".contentEquals(p));
     }
 
     /**
      * 当前环境是否是测试环境
      */
     public static boolean isTest() {
-        return "test".equals(getProfile());
+        return Arrays.stream(activeProfiles()).anyMatch(p -> "test".contentEquals(p));
     }
 
     /**
      * 当前环境是否是生产环境
      */
     public static boolean isProd() {
-        return "prod".equals(getProfile());
+        return Arrays.stream(activeProfiles()).anyMatch(p -> "prod".contentEquals(p));
     }
 
     @Override

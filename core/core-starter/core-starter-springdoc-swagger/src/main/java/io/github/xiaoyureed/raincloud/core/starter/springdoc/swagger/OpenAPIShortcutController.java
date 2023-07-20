@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import io.github.xiaoyureed.raincloud.core.common.util.ServletUtils;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * xiaoyureed@gmail.com
  * This controller is used to redirect the root path for every single application
  */
 @Controller
+@Slf4j
 public class OpenAPIShortcutController {
 
     private final Environment environment;
@@ -27,10 +29,11 @@ public class OpenAPIShortcutController {
      * swagger document 根路径快速跳转
      */
     @GetMapping("/")
-    public void index(HttpServletResponse response) throws IOException {
+    public void index(HttpServletResponse response) throws Exception {
         String contextPath = environment.getProperty("server.servlet.context-path");
         ServletUtils.redirect(response,
             (StringUtils.isNotEmpty(contextPath) ? contextPath : StringUtils.EMPTY).concat("/swagger-ui.html")
         );
+        log.debug("!!! swagger shortcut redirect");
     }
 }

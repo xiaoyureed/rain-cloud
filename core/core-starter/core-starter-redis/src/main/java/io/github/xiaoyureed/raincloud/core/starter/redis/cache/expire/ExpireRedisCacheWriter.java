@@ -26,7 +26,7 @@ import org.springframework.util.Assert;
  * @see CacheExpire
  * @see CacheExpireHolder
  */
-@SuppressWarnings("all")
+//@SuppressWarnings("all")
 public class ExpireRedisCacheWriter implements RedisCacheWriter {
     private final RedisConnectionFactory connectionFactory;
     private final Duration sleepTime;
@@ -76,7 +76,7 @@ public class ExpireRedisCacheWriter implements RedisCacheWriter {
 
 
     @Override
-    public void put(@NonNull String name, @NonNull byte[] key, byte[] value, @Nullable Duration ttl) {
+    public void put(@NonNull String name, @NonNull byte[] key, @NonNull byte[] value, @Nullable Duration ttl) {
         Assert.notNull(name, "Name must not be null!");
         Assert.notNull(key, "Key must not be null!");
         Assert.notNull(value, "Value must not be null!");

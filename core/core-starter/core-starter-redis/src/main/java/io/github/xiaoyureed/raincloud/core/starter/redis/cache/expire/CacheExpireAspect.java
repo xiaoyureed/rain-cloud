@@ -22,6 +22,10 @@ import lombok.extern.slf4j.Slf4j;
 @Order(-1)
 public class CacheExpireAspect {
 
+    {
+        log.debug("!!! cache expire aspect is in use.");
+    }
+
     /**
      * 设置方法对应的缓存过期时间
      */

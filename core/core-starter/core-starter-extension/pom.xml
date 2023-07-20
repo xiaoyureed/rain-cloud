@@ -16,6 +16,7 @@
     <modules>
         <module>core-starter-extension-static</module>
         <module>core-starter-extension-excel</module>
+        <module>core-starter-extension-email</module>
     </modules>
 
 </project>

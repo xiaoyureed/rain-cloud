@@ -49,7 +49,7 @@ public class OpenAPIConfiguration {
             log.info("\n----------------------------------------------------------\n" +
                     "\t Application: '{}' is running! \n" +
                     "\t Environment:  {} \n" +
-                    "\t Spring Doc (local network):  http://{}:{}{}{} \n" +
+                    "\t Spring Doc (remote):  http://{}:{}{}{} \n" +
                     "\t Spring Doc (local):  http://localhost:{}{}{} \n" +
                     "----------------------------------------------------------",
                 applicationName,

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 /**
  * xiaoyureed@gmail.com
  */
-@Component
+//@Component
 public class BannerRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {

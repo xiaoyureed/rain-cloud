@@ -1,0 +1,18 @@
+server:
+  port: 8101
+spring:
+  application:
+    name: @artifactId@
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      ssl:
+        enabled: false
+      database: 0
+  cache:
+    type: redis
+    redis:
+      cache-null-values: true #  允许缓存空值，避免缓存穿透, default: true
+      time-to-live: 3600000 # 过期时间 1h
+

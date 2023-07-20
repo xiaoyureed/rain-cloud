@@ -13,4 +13,5 @@ public class WebStarterConfiguration {
     {
         log.debug("!!! web starter ok");
     }
+
 }

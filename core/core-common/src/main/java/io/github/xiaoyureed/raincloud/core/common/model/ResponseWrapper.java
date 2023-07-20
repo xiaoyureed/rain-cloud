@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 
-import io.github.xiaoyureed.raincloud.core.common.model.page.IPage;
+import io.github.xiaoyureed.raincloud.core.common.model.page.IPageContainer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,7 +33,7 @@ public class ResponseWrapper<T> implements Serializable {
     private T data;
 
     @Schema(description = "pagination info")
-    private IPage pageInfo;
+    private IPageContainer pageInfo;
 
     public static <T> ResponseWrapper<T> ok() {
         return new ResponseWrapper<T>()
@@ -48,7 +48,7 @@ public class ResponseWrapper<T> implements Serializable {
             .setData(data);
     }
 
-    public static <T> ResponseWrapper<List<T>> okPage(List<T> data, IPage pageParam) {
+    public static <T> ResponseWrapper<List<T>> okPage(List<T> data, IPageContainer pageParam) {
         return new ResponseWrapper<List<T>>()
             .setHttpStatus(HttpStatus.OK.value())
             .setCode(CodeEnum.SUCCESS.getCode())

@@ -1,0 +1,2 @@
+#org.springframework.boot.env.EnvironmentPostProcessor=\
+#  io.github.xiaoyureed.raincloud.core.starter.stream.kafka.KafkaConfigurationEnvironmentPostProcessor

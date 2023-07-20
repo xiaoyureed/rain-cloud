@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
         )
 })
 @Slf4j
-@Component
+//@Component
 public class MybatisShardStatementInterceptor implements Interceptor {
 
     private static final ReflectorFactory DEFAULT_REFLECTOR_FACTORY = new DefaultReflectorFactory();

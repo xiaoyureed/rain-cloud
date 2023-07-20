@@ -1,9 +1,6 @@
 package io.github.xiaoyureed.raincloud.core.starter.database.util;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.util.CollectionUtils;
@@ -14,7 +11,8 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.InnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
-import io.github.xiaoyureed.raincloud.core.common.model.page.PageParam;
+import io.github.xiaoyureed.raincloud.core.common.model.page.IPageContainer;
+import io.github.xiaoyureed.raincloud.core.common.model.page.PageContainer;
 import io.github.xiaoyureed.raincloud.core.common.model.page.SortItem;
 import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.schema.Column;
@@ -27,13 +25,13 @@ public class MyBatisUtils {
 
     private static final String MYSQL_ESCAPE_CHARACTER = "`";
 
-    public static <T> Page<T> buildPage(PageParam pageParam) {
-        return buildPage(pageParam, null);
+    public static <T> Page<T> buildPage(IPageContainer pageInfo) {
+        return buildPage(pageInfo, null);
     }
 
-    public static <T> Page<T> buildPage(PageParam pageParam, Collection<SortItem> sortingFields) {
+    public static <T> Page<T> buildPage(IPageContainer pageInfo, Collection<SortItem> sortingFields) {
         // 页码 + 数量
-        Page<T> page = new Page<>(pageParam.getPage(), pageParam.getSize());
+        Page<T> page = new Page<>(pageInfo.getPage(), pageInfo.getSize());
 
         // 排序字段
         if (!CollectionUtils.isEmpty(sortingFields)) {
@@ -51,16 +49,17 @@ public class MyBatisUtils {
 
     /**
      * 将拦截器添加到链中
-     * 由于 MybatisPlusInterceptor 不支持添加拦截器，所以只能全量设置
+     * 由于 MybatisPlusInterceptor 不支持添加拦截器，所以只能全量设置      ?
      *
      * @param interceptor 链
      * @param inner 拦截器
      * @param index 位置
      */
     public static void addInterceptor(MybatisPlusInterceptor interceptor, InnerInterceptor inner, int index) {
-        List<InnerInterceptor> inners = new ArrayList<>(interceptor.getInterceptors());
-        inners.add(index, inner);
-        interceptor.setInterceptors(inners);
+//        List<InnerInterceptor> inners = new ArrayList<>(interceptor.getInterceptors());
+//        inners.add(index, inner);
+//        interceptor.setInterceptors(inners);
+        interceptor.addInnerInterceptor(inner);
     }
 
     /**

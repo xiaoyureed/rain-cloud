@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * xiaoyureed@gmail.com
+ * https://github.com/davidfantasy/mybatis-plus-generator-ui
  */
 @Slf4j
 @ComponentScan

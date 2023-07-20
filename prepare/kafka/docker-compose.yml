@@ -1,0 +1,38 @@
+version: "3"
+networks:
+  kafka-tier:
+    driver: bridge
+services:
+#  zookeeper:
+#    image: docker.io/bitnami/zookeeper:3.8
+#    container_name: zookeeper
+#    networks:
+#      - kafka-tier
+#    ports:
+#      - "2181:2181"
+#    environment:
+#      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka:
+    image: docker.io/bitnami/kafka:3.5
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    networks:
+      - kafka-tier
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    networks:
+      - kafka-tier
+    ports:
+      - "9093:8080"
+    depends_on:
+      - kafka
+    environment:
+      DYNAMIC_CONFIG_ENABLED: 'true'  # not necessary, added for tests
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+
+

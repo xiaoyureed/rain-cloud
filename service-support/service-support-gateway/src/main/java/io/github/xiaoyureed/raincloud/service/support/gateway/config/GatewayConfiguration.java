@@ -4,12 +4,7 @@ import java.util.List;
 
 import org.springdoc.core.properties.SwaggerUiConfigParameters;
 import org.springdoc.core.properties.SwaggerUiConfigProperties;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
-import org.springframework.cloud.client.discovery.ReactiveDiscoveryClient;
-import org.springframework.cloud.gateway.discovery.DiscoveryClientRouteDefinitionLocator;
-import org.springframework.cloud.gateway.discovery.DiscoveryLocatorProperties;
 import org.springframework.cloud.gateway.route.RouteLocator;
-import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -18,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.CorsUtils;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
@@ -37,6 +31,10 @@ public class GatewayConfiguration {
 
     private static final String MAX_AGE = "18000L";
 
+    /**
+     *
+     * 不适用这个了, 用下面的那个方法
+     */
 //    @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration config = new CorsConfiguration();
@@ -90,6 +88,9 @@ public class GatewayConfiguration {
         };
     }
 
+    /**
+     * 从 nacos 动态获取 groupOpenApi
+     */
     @Bean
     public RefreshRoutesListener refreshRoutesListener(
         RouteLocator routeLocator,
@@ -117,8 +118,25 @@ public class GatewayConfiguration {
     //                    GroupedOpenApi.builder().pathsToMatch("/" + name + "/**").group(name).build();
     //                });
     //        return groups;
+
+
+
+
+//    List<GroupedOpenApi> groups = new ArrayList<>();
+//    List<RouteDefinition> definitions = locator.getRouteDefinitions().collectList().block();
+//    definitions.stream().filter(routeDefinition -> routeDefinition.getId().matches(".*-service")).forEach(routeDefinition -> {
+//        String name = routeDefinition.getId().replaceAll("-service", "");
+//        GroupedOpenApi.builder().pathsToMatch("/" + name + "/**").setGroup(name).build();
+//    });
+//    return groups;
+
+
+
     //    }
 
+    /**
+     * 代码中定义路由
+     */
 //    @Bean
 //    public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
 //        return builder.routes()
