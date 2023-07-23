@@ -196,7 +196,7 @@ public class GithubLoginApplication {
         return ClientRegistration.withRegistrationId("github")
             .clientName("Github")
             .clientId("ad6fa4354390a68c2a5d")
-            .clientSecret("35b1ae1c4d8a44cfad3d5a5c23b05ae2e116856a")
+            .clientSecret("35xyb1ae1c4d8a44cfad3d5a5c23b05ae2e116856a")
             .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
             .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
             .authorizationUri("https://github.com/login/oauth/authorize")
