@@ -23,7 +23,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Account one = accountService.lambdaQuery()
-            .select(Account::getName, Account::getId)
+            .select(Account::getName, Account::getId, Account::getPassword)
             .eq(Account::getName, username)
             .one();
         System.out.println(one);
@@ -32,6 +32,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("user not found, name: " + username);
         }
 
-        return new LoginUserDetails().setUsername(one.getName()).setId(one.getId());
+        return new LoginUserDetails().setUsername(one.getName()).setPassword(one.getPassword()).setId(one.getId());
     }
 }

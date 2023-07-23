@@ -3,6 +3,7 @@ package io.github.xiaoyureed.raincloud.core.starter.security.auth;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,9 +28,16 @@ public class GlobalSecurityExceptionHandler {
     }
 
     @ResponseBody
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseWrapper<Void> handleUserNotFoundException(UsernameNotFoundException e) {
+        log.error("❌认证失败, 用户不存在, uri: {}, 异常信息: {}", ServletUtils.getRequestInfo(), e.getMessage());
+        return ResponseWrapper.error(CodeEnum.USERNAME_PASSWORD_WRONG);
+    }
+
+    @ResponseBody
     @ExceptionHandler(AuthenticationException.class)
     public ResponseWrapper<Void> handleAuthenticationException(AuthenticationException e) {
-        log.error("❌当前发送请求的用户未经认证, uri: {}, 异常信息: {}", ServletUtils.getRequestInfo(), e.getMessage());
+        log.error("❌认证失败, uri: {}, 异常信息: {}", ServletUtils.getRequestInfo(), e.getMessage(), e);
         return ResponseWrapper.error(CodeEnum.UNAUTHENTICATED_ERROR);
     }
 }

@@ -3,6 +3,7 @@ package io.github.xiaoyureed.raincloud.core.starter.springdoc.swagger;
 import java.net.Inet4Address;
 import java.util.Optional;
 
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springdoc.core.properties.SpringDocConfigProperties;
 import org.springdoc.core.properties.SwaggerUiConfigProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,8 @@ import lombok.extern.slf4j.Slf4j;
 })
 public class OpenAPIConfiguration {
 
+    private static final String security_schema_name_http_bearer = "Bearer Authentication";
+
     @Autowired
     private OpenAPIProperties openAPIProperties;
 
@@ -62,6 +65,13 @@ public class OpenAPIConfiguration {
     @Value("${servlet.port:8080}")
     private String port;
 
+//    @Bean
+    public GroupedOpenApi groupedOpenApiaaa() {
+        return GroupedOpenApi.builder()
+            .group("aaa") // showed name
+            .pathsToMatch("/aaa/**") // matched paths
+            .build();
+    }
 
     @Bean
     public OpenAPI openAPI() {
@@ -80,17 +90,41 @@ public class OpenAPIConfiguration {
 //                new Server().url("http://localhost:8888/" + applicationName)
 //            ))
 
-            // oauth2 password
-            // 设置 spring security jwt accessToken 认证的请求头 Authorization: Bearer xxx.xxx.xxx
-            .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
+            .addSecurityItem(new SecurityRequirement().addList(security_schema_name_http_bearer)) // 和后面的schema名字必须一致
+            //swagger ui 页面会新增一个组件 "Authentication", 点开可以填充 token
             .components(new Components()
-                .addSecuritySchemes("Bearer Authentication",    // 显示的名字
+                .addSecuritySchemes(security_schema_name_http_bearer,    // ui 上显示的名字
                     new SecurityScheme()
+                        /**
+                         * 认证类型
+                         * - http (常用): 比如
+                         *      - http basic 认证, 不推荐
+                         *      - http bearer 认证
+                         * - apikey: 就是在Header、Query或者Cookie中附加特定的访问Key即可，如果你愿意，放在Url Path中都行
+                         *      - 明文 key: 服务器分配一个 key 给 Client, 调用方直接附加这个值用于认证, 等同于Basic认证。(一旦泄露，即可被重复使用)
+                         *      - 可解密的 key: 服务器先生成一个类似 md5 加密的Token再交予客户端, 等同 bearer 认证
+                         *      - 可按私有规则解密的 key (用于服务器对服务器场景): 比如这个 key -> sign = md5(arg1+'+'+arg2+'+'+timestamp+'+'+secret),
+                         *          再把userid、sign和明文的arg1、arg2和时间戳一起传给服务器，服务器拿出该user的secret后再拼接出这个sign，比较之后就算通过。
+                         * - oauth2
+                         *      - Authorization code模式 (用于第三方应用场景)
+                         *      - Implicit : 简单版Authorization code，不能刷新，只能通过浏览器维持登录
+                         */
                         .type(SecurityScheme.Type.HTTP)
-                        .name("Authentication")         // 接收token 的参数名字
-                        .in(SecurityScheme.In.HEADER)   // 位置
-                        .bearerFormat("JWT")
+                        /**
+                         * 仅适用于 http 认证类型:
+                         * - basic : 前缀 Basic
+                         * - bearer: 前缀 Bearer
+                         */
                         .scheme("bearer")
+                        /**
+                         * 用于 apiKey 认证类型下, key 的名字 (http bearer 认证类型下会忽略)
+                         */
+                        .name(security_schema_name_http_bearer)
+                        // 参数所在位置, 适用于 apikey 类型 (http 认证会忽略, 始终是在 header, )
+                        .in(SecurityScheme.In.HEADER)
+                        .bearerFormat("JWT") // optional, jwt http bearer 认证可加上
+                        // 支持的 flow types 的配置信息, 仅适用于 oauth 认证
+//                        .flows()
                 )
             )
             // 效果等价上面的 components()

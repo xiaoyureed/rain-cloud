@@ -27,5 +27,11 @@
             <artifactId>core-starter-database-mybatis-mysql</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.github.xiaoyureed.raincloud</groupId>
+            <artifactId>core-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 </project>

@@ -20,6 +20,11 @@
         <module>example-spring-boot-kafka</module>
         <module>example-spring-boot-redis</module>
         <module>example-spring-boot-mybatis-mysql</module>
+        <module>example-spring-boot-jpa-postgres</module>
+        <module>example-spring-cloud-oauth</module>
+        <module>example-spring-boot-oauth</module>
+        <module>example-spring-boot-static-resources</module>
+        <module>example-static-resources</module>
     </modules>
 
 </project>

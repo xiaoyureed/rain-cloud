@@ -1,8 +1,8 @@
 package io.github.xiaoyureed.raincloud.core.starter.security;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -13,15 +13,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.AuthenticationException;
@@ -42,11 +46,10 @@ import org.springframework.web.servlet.mvc.condition.PathPatternsRequestConditio
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import io.github.xiaoyureed.raincloud.core.common.model.CodeEnum;
-import io.github.xiaoyureed.raincloud.core.common.model.ResponseWrapper;
 import io.github.xiaoyureed.raincloud.core.common.util.ServletUtils;
-import io.github.xiaoyureed.raincloud.core.starter.common.util.BeanUtils;
-import io.github.xiaoyureed.raincloud.core.starter.security.auth.AnonymousAccessAllowed;
+import io.github.xiaoyureed.raincloud.core.starter.security.auth.AnonymousAccess;
+import io.github.xiaoyureed.raincloud.core.starter.security.auth.GlobalSecurityExceptionCatchFilter;
+import io.github.xiaoyureed.raincloud.core.starter.security.auth.PermitAccess;
 import io.github.xiaoyureed.raincloud.core.starter.security.auth.jwt.JwtAuthenticationFilter;
 import io.github.xiaoyureed.raincloud.core.starter.security.auth.jwt.JwtAuthenticationProvider;
 import jakarta.servlet.ServletException;
@@ -57,11 +60,11 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @Slf4j
 /**
- * // 可以去掉, security仍然生效
+ * 可以去掉, security仍然生效
  * 若是引入的 spring-boot-starter-security, 则可去掉
  * 若使用的是单独的 spring-security-config、web、core（三个），就需要使用 @EnableWebSecurity注解。
  */
-//@EnableWebSecurity
+@EnableWebSecurity
 //@EnableMethodSecurity(
 //    /**
 //     * 默认开启
@@ -79,6 +82,8 @@ import lombok.extern.slf4j.Slf4j;
 //)
 public class SecurityConfiguration {
 
+    private boolean debug = true;
+
     /**
      * SHA-256+随机盐+密钥 对密码进行加密
      *
@@ -93,7 +98,7 @@ public class SecurityConfiguration {
     @Value("${spring.profiles.active:}")
     private String activeProfiles;
 
-    private static final String[] swagger_paths = {
+    public static final String[] swagger_paths = {
         // -- Swagger UI v2
         "/v2/api-docs",
         "/swagger-resources",
@@ -102,44 +107,20 @@ public class SecurityConfiguration {
         "/configuration/security",
         "/swagger-ui.html",
         "/webjars/**",
-        "/error", // 忽略 /error 页面
 
         // -- Swagger UI v3 (OpenAPI)
         "/v3/api-docs/**",
         "/swagger-ui/**",
+
         // swagger-ui shortcut path
         "/",
+
+        // 忽略 /error 页面
+        "/error",
 
         // others
         "/css/**","/js/**","/index.html","/img/**","/fonts/**","/favicon.ico"
     };
-
-    private String[] getWhiteList() {
-        List<String> list = new ArrayList<>();
-
-        if (!activeProfiles.contains("prod")) {
-            log.debug("!!! Current env is not prod, will add swagger resources to the whitelist");
-
-            list.add("/swagger-ui.html");
-            list.add("/**");
-
-            list.add("/swagger-ui.html/**");
-            list.add("/swagger-ui/**");
-            list.add("/swagger-resources/**");
-            list.add("/webjars/**");
-            list.add("/v3/**");
-            list.add("/v2/**");
-            list.add("/*/api-docs");
-            list.add("/doc.html");
-            list.add("/css/**");
-        }
-
-//        list.add("/userAccount/login");
-//        list.add("/login");
-//        list.add("/home");
-
-        return list.toArray(new String[0]);
-    }
 
 //    @Autowired
 //    private UserDetailsService userDetailsService;
@@ -151,8 +132,56 @@ public class SecurityConfiguration {
     @Lazy
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Autowired
+//    @Autowired
     private JwtAuthenticationProvider jwtAuthenticationProvider;
+
+    /**
+     * 配置静态资源
+     * https://www.fengnayun.com/news/content/287262.html
+     * 这种方式是不走过滤器链的, 跟 Spring Security 无关
+     *      例如, 放行前端页面的静态资源
+     * 而通过 SecurityFilterChain 这种方式是走 Spring Security 过滤器链的，
+     *      在过滤器链中，给请求放行, 在请求通过的时候可以获取 security 相关的数据, 例如 登录接口 就应该放在此处放行 (因为在这个过程中，还有其他事情要做。)
+     *
+     * - 放行 swagger ui 相关的资源
+     */
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return new WebSecurityCustomizer() {
+            @Override
+            public void customize(WebSecurity web) {
+                if (applicationContext instanceof ReactiveWebApplicationContext) {
+                    log.debug("!!! detected that this is a [reactive] application");
+                    web.ignoring().requestMatchers(swagger_paths)
+                    // todo 忽略reactive application 常见的静态资源路径
+                    //此处 PathRequest 需要分情况引入 (servlet, reactive 两种包)
+//                        .requestMatchers(org.springframework.boot.autoconfigure.security.reactive.PathRequest.toStaticResources().atCommonLocations())
+                    ;
+
+                } else {
+                    log.debug("!!! detected that this is a [servlet] application");
+                    web.ignoring().requestMatchers(swagger_paths)// // 忽略 swagger 接口路径
+                        // 忽略常见的静态资源路径
+                        //此处 PathRequest 需要分情况引入 (servlet, reactive 两种包)
+                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+                }
+
+
+            }
+        };
+    }
+
+    /**
+     * 注册自定义 filter 的另一种方法, 并指定顺序
+     */
+//    @Bean
+    public FilterRegistrationBean<GlobalSecurityExceptionCatchFilter> filterFilterRegistrationBean() {
+        FilterRegistrationBean<GlobalSecurityExceptionCatchFilter> registry = new FilterRegistrationBean<>();
+        registry.setFilter(new GlobalSecurityExceptionCatchFilter());
+        registry.setOrder(-101); //最先进入, 最后出来
+//        registry.setUrlPatterns();
+        return registry;
+    }
 
     /**
      * 配置路由
@@ -199,10 +228,11 @@ public class SecurityConfiguration {
                     /**
                      * anonymous() :匿名访问，仅允许匿名用户访问, 如果登录认证后，带有token信息再去请求，这个anonymous()关联的资源就不能被访问
                      * permitAll() 登录能访问,不登录也能访问
+                     *
+                     * https://stackoverflow.com/questions/51395906/understanding-the-difference-of-permitall-and-anonymous-in-spring-security
                      */
-                    .requestMatchers(anonymousAccessAllowedPaths()).permitAll()
-                    //.auth.requestMatchers().anonymous();
-
+                    .requestMatchers(pathsByAnnotation(PermitAccess.class)).permitAll()
+                    .requestMatchers(pathsByAnnotation(AnonymousAccess.class)).anonymous()
                     .requestMatchers("/public/**").permitAll()
                     .requestMatchers("/admin/**").hasRole("ADMIN")
 
@@ -247,7 +277,8 @@ public class SecurityConfiguration {
 
 //            .authenticationManager()
 
-            // 校验异常处理
+            // security 相关异常处理
+            //https://juejin.cn/post/6844904202410393608
             .exceptionHandling(cusExceptionHandling -> cusExceptionHandling
                 //如果是授权过程中出现的异常会被封装成AccessDeniedException然后调用AccessDeniedHandler对象的方法去进行异常处理。
                 // 会在全局异常之后捕获
@@ -260,9 +291,13 @@ public class SecurityConfiguration {
                     @Override
                     public void handle(HttpServletRequest request, HttpServletResponse response,
                                        AccessDeniedException accessDeniedException) throws IOException, ServletException {
+                        log.error("!!! 授权异常, uri: {}, 异常信息: {}", ServletUtils.getRequestInfo(), accessDeniedException.getMessage(), accessDeniedException);
+
                         //当用户在没有授权的情况下访问受保护的REST资源时，将调用此方法发送403 Forbidden响应
 //                        response.sendError(HttpServletResponse.SC_FORBIDDEN, accessDeniedException == null ? "UnAuthorized" : accessDeniedException.getMessage());
-                        ServletUtils.sendResponseContent(response, BeanUtils.toJson(ResponseWrapper.error(CodeEnum.UNAUTHORIZED_ACCESS_DENIED_ERROR)));
+//                        ServletUtils.sendResponseContent(response, BeanUtils.toJson(ResponseWrapper.error(CodeEnum.UNAUTHORIZED_ACCESS_DENIED_ERROR)));
+
+                        throw accessDeniedException;
                     }
                 })
 
@@ -274,14 +309,16 @@ public class SecurityConfiguration {
                     .authenticationEntryPoint(new AuthenticationEntryPoint() {
                         @Override
                         public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+                            log.error("!!! 认证异常, uri: {}, 异常信息: {}", ServletUtils.getRequestInfo(), authException.getMessage(), authException);
+
                             //当用户尝试访问安全的REST资源而不提供任何凭据时，将调用此方法发送401 响应
 //                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException == null ? "Unauthenticated" : authException.getMessage());
 
-                            ServletUtils.sendResponseContent(response, BeanUtils.toJson(ResponseWrapper.error(CodeEnum.UNAUTHENTICATED_ERROR)));
+//                            ServletUtils.sendResponseContent(response, BeanUtils.toJson(ResponseWrapper.error(CodeEnum.UNAUTHENTICATED_ERROR)));
 
                             //也可以抛出
-                            // 这里抛出的异常可在 filter 中对 "filterChain.doFilter(request, response);" 进行 catch 来捕获, 然后 HandlerExceptionResolver.resolve(..) 通过全局异常来进行处理
-//                            throw authException;
+                            // 这里抛出的异常可在优先级最高的 filter 中对 "filterChain.doFilter(request, response);" 进行 catch 来去全局捕获, 然后 HandlerExceptionResolver.resolve(..) 通过全局异常来进行处理
+                            throw authException;
                         }
                     })
             )
@@ -319,15 +356,17 @@ public class SecurityConfiguration {
 
     }
 
-    private String[] anonymousAccessAllowedPaths() {
+    private String[] pathsByAnnotation(Class<? extends Annotation> annoType) {
         HashSet<String> result = new HashSet<>();
 
         // 指定名字, 否则会报错(有多个同类型的实例)
-        RequestMappingHandlerMapping requestMappingHandlerMapping = applicationContext.getBean("requestMappingHandlerMapping", RequestMappingHandlerMapping.class);
+        RequestMappingHandlerMapping requestMappingHandlerMapping = applicationContext
+            .getBean("requestMappingHandlerMapping", RequestMappingHandlerMapping.class);
         Map<RequestMappingInfo, HandlerMethod> mappings = requestMappingHandlerMapping.getHandlerMethods();
+
         mappings.entrySet().forEach(entry -> {
             HandlerMethod method = entry.getValue();
-            AnonymousAccessAllowed anno = method.getMethodAnnotation(AnonymousAccessAllowed.class);
+            Annotation anno = method.getMethodAnnotation(annoType);
 
             if (anno != null) {
                 // 不要用这种方式, 否则controller 类上的 path 不会被拼上来
@@ -347,7 +386,7 @@ public class SecurityConfiguration {
             }
         });
 
-        log.debug("!!! AnonymousAccessAllowed paths resolved: {}", result);
+        log.debug("!!! {} paths resolved: {}", annoType.getSimpleName(), result);
 
         return result.toArray(new String[0]);
     }
@@ -374,45 +413,27 @@ public class SecurityConfiguration {
      *         };
      *   一般不会直接自定义, 而是通过自定义 authenticationProvider 的方式间接实现
      */
+//    @Bean
+//    public AuthenticationManager authenticationManager() {
+//        return new ProviderManager(Arrays.asList(jwtAuthenticationProvider));
+//    }
+
     @Bean
-    public AuthenticationManager authenticationManager() {
-        return new ProviderManager(Arrays.asList(jwtAuthenticationProvider));
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
-    /**
-     * 配置静态资源
-     * https://www.fengnayun.com/news/content/287262.html
-     * 这种方式是不走过滤器链的, 跟 Spring Security 无关
-     *      例如, 放行前端页面的静态资源
-     * 而通过 SecurityFilterChain 这种方式是走 Spring Security 过滤器链的，
-     *      在过滤器链中，给请求放行, 在请求通过的时候可以获取 security 相关的数据, 例如 登录接口 就应该放在此处放行 (因为在这个过程中，还有其他事情要做。)
-     *
-     * - 放行 swagger ui 相关的资源
-     */
+    @Autowired
+    private UserDetailsService userDetailsService;
+
     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return new WebSecurityCustomizer() {
-            @Override
-            public void customize(WebSecurity web) {
-                if (applicationContext instanceof ReactiveWebApplicationContext) {
-                    log.debug("!!! detected that this is a [reactive] application");
-                    web.ignoring().requestMatchers(swagger_paths)
-                        // todo 忽略reactive application 常见的静态资源路径
-                        //此处 PathRequest 需要分情况引入 (servlet, reactive 两种包)
-//                        .requestMatchers(org.springframework.boot.autoconfigure.security.reactive.PathRequest.toStaticResources().atCommonLocations())
-                        ;
+    public AuthenticationProvider authenticationProvider() {
+        // 这个 provider 在认证时, 先通过 user Service 查 usrname 是否存在, 如果存在拿到真是密码, 再调用 encode 校验请求中的密码是否正确
+        DaoAuthenticationProvider result = new DaoAuthenticationProvider();
+        result.setPasswordEncoder(encoder());
+        result.setUserDetailsService(userDetailsService);
 
-                } else {
-                    log.debug("!!! detected that this is a [servlet] application");
-                    web.ignoring().requestMatchers(swagger_paths)// // 忽略 swagger 接口路径
-                        // 忽略常见的静态资源路径
-                        //此处 PathRequest 需要分情况引入 (servlet, reactive 两种包)
-                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
-                }
-
-
-            }
-        };
+        return result;
     }
 
     @Autowired
@@ -424,7 +445,7 @@ public class SecurityConfiguration {
     private CorsConfigurationSource corsConfigurationSource() {
         if (applicationContext instanceof ReactiveWebApplicationContext) {
             log.debug("!!! detected that this is a [reactive] application");
-            throw new RuntimeException("unsupported");
+            throw new RuntimeException(" reactive application unsupported");
         }
         else {
             log.debug("!!! detected that this is a [servlet] application");

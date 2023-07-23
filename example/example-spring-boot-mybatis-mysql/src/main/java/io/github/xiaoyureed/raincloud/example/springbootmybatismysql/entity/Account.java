@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 
-import io.github.xiaoyureed.raincloud.core.starter.database.model.AbstractBaseEntity;
+import io.github.xiaoyureed.raincloud.core.starter.mysql.model.AbstractBaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;

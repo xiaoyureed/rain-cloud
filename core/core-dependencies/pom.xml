@@ -149,6 +149,12 @@
 
             <dependency>
                 <groupId>io.github.xiaoyureed.raincloud</groupId>
+                <artifactId>core-starter-database-jpa-postgres</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.xiaoyureed.raincloud</groupId>
                 <artifactId>core-starter-springdoc-swagger</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>

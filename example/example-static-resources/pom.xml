@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>example</artifactId>
+        <groupId>io.github.xiaoyureed.raincloud</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>example-static-resources</artifactId>
+
+    <build>
+        <resources>
+            <resource>
+                <!--
+                directory   将该路径下的资源(files/{version}/xx)打包, version 可以为任何名字, 也可以不设置 version
+                targetPath  成该路径下存储
+                在其他项目引入后, 访问 http://127.0.0.1:8080/webjars/files/kele.jpg, 版本号可省略是因为其他项目引入了 webjars-locator-core
+                -->
+                <directory>${project.basedir}/src/main/resources</directory>
+                <targetPath>${project.build.outputDirectory}/META-INF/resources/webjars</targetPath>
+            </resource>
+        </resources>
+    </build>
+
+</project>

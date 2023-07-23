@@ -1,0 +1,15 @@
+spring:
+  security:
+    user:
+      password: user
+      name: user
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: ad6fa4354390a68c2a5d
+            client-secret: 35b1ae1c4d8a44cfad3d5a5c23b05ae2e116856a
+            client-name: Github_
+logging:
+  level:
+    org.springframework.security: trace

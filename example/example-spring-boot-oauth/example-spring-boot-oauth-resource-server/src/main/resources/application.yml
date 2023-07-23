@@ -1,0 +1,9 @@
+server:
+  port: 9001
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # auth server uri
+          issuer-uri: http://auth-server:9000

@@ -10,7 +10,7 @@ import io.github.xiaoyureed.raincloud.core.starter.security.util.JwtUtils;
 /**
  * xiaoyureed@gmail.com
  */
-@Service
+//@Service
 public class JwtUserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String token) throws UsernameNotFoundException {

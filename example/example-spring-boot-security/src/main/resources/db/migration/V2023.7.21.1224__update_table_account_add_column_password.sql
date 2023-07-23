@@ -1,0 +1,1 @@
+alter table account add column password varchar(500);

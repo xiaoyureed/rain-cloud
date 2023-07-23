@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 
-import io.github.xiaoyureed.raincloud.core.starter.database.model.AbstractBaseEntity;
+import io.github.xiaoyureed.raincloud.core.starter.mysql.model.AbstractBaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -23,6 +23,10 @@ public class Account extends AbstractBaseEntity {
     @TableField("name")
     private String name;
 
+    @Schema(description = "password")
+    @TableField("password")
+    private String password;
+
     @Schema(description = "age")
     @TableField("age")
     private Integer age;
@@ -34,4 +38,5 @@ public class Account extends AbstractBaseEntity {
     @TableField("birthday")
     @Schema(description = "birthday")
     private LocalDateTime birthday;
+
 }

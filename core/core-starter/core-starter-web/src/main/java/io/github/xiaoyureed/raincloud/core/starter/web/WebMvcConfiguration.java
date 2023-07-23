@@ -2,6 +2,7 @@ package io.github.xiaoyureed.raincloud.core.starter.web;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -9,13 +10,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.method.HandlerTypePredicate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.github.xiaoyureed.raincloud.core.common.util.ListUtil;
 
 /**
  * xiaoyureed@gmail.com
@@ -56,6 +57,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     }
 
     /**
+     * 区别:
      * 1. 执行时机不同:
      * - extendMessageConverters()是在Spring Boot自动配置的HttpMessageConverters初始化后执行。
      * - configureMessageConverters()是在Spring Boot自动配置的HttpMessageConverters初始化前执行。
@@ -70,7 +72,15 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         // this line gets the swagger ui rendering issue, do not do this way
 //        converters.add(0, mappingJackson2HttpMessageConverter());
+
         converters.add(mappingJackson2HttpMessageConverter());
+    }
+
+    @Override
+    public void configurePathMatch(PathMatchConfigurer configurer) {
+//        configurer.addPathPrefix("/api", HandlerTypePredicate.forAnnotation(RestController.class));
+        // or
+//        configurer.addPathPrefix("/api", handlerType -> handlerType.isAnnotationPresent(RestController.class));
     }
 
     /**
@@ -82,8 +92,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Bean
     public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
         MappingJackson2HttpMessageConverter result = new MappingJackson2HttpMessageConverter();
-
         result.setObjectMapper(objectMapper);
+
         result.setDefaultCharset(StandardCharsets.UTF_8);
         result.setSupportedMediaTypes(List.of(
             MediaType.APPLICATION_JSON,

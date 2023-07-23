@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors
-public class LoginUserDetails implements UserDetails, LoginUserInfo<LoginUserDetails> {
+public class LoginUserDetails implements UserDetails {
 
     private String id;
     private String username;
@@ -63,13 +63,4 @@ public class LoginUserDetails implements UserDetails, LoginUserInfo<LoginUserDet
         return true;
     }
 
-    @Override
-    public LoginUserDetails user() {
-        return this;
-    }
-
-    @Override
-    public String identifier() {
-        return username;
-    }
 }

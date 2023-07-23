@@ -1,1 +1,1 @@
-io.github.xiaoyureed.raincloud.core.starter.database.DatabaseStarterConfiguration
+io.github.xiaoyureed.raincloud.core.starter.jpa.postgres.ScannerConfiguration

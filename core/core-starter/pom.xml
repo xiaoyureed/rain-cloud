@@ -28,6 +28,7 @@
         <module>core-starter-springdoc-swagger</module>
         <module>core-starter-job</module>
         <module>core-starter-extension</module>
+        <module>core-starter-security-oauth</module>
     </modules>
 
     <dependencies>

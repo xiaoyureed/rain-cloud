@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -21,6 +22,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * https://blog.csdn.net/qq_41611820/article/details/109742713 query the params from request
+ *
  * @author: xiaoyureed@gmail.com
  */
 @Slf4j
@@ -73,6 +76,32 @@ public class ServletUtils {
 
     public static String getRequestHeader(String header) {
         return getRequest().getHeader(header);
+    }
+
+    public static Optional<String> getAuthenticationToken(String key, boolean bearerPrefixed) {
+        final String bearerPrefix = "Bearer ";
+
+        String token = getRequestHeader(key);
+
+        if (StringUtils.isBlank(token)) {
+            token = getRequest().getParameter(key);
+        }
+
+        if (StringUtils.isBlank(token)) {
+            log.error("!!! fetch token failed, the token is missing");
+            return Optional.empty();
+        }
+
+        if (bearerPrefixed && !token.startsWith(bearerPrefix)) {
+            log.error("!!! fetch token failed, token format is wrong, bearer prefix is needed");
+            return Optional.empty();
+        }
+
+        if (token.startsWith(bearerPrefix)) {
+            token = token.substring(bearerPrefix.length());
+        }
+
+        return Optional.of(token);
     }
 
     public static Map<String, String> getRequestHeaders() {

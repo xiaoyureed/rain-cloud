@@ -1,0 +1,30 @@
+openapi: 3.0.1
+info:
+  title: example-spring-boot
+  description: example-spring-boot APIs
+  contact:
+    name: xiaoyureed
+    url: xiaoyureed.github.io
+    email: xiaoyureed@gmail.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+externalDocs:
+  description: 这是一个额外的描述。
+  url: https://shijizhe.github.io/
+servers:
+- {}
+paths:
+  /:
+    get:
+      tags:
+      - spring-boot-application
+      operationId: index_1
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+components: {}

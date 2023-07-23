@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * xiaoyureed@gmail.com
  */
-@Component
+//@Component
 @Slf4j
 public class JwtAuthenticationProvider implements AuthenticationProvider {
 
