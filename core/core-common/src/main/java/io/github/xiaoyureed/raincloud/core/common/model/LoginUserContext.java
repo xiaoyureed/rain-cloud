@@ -3,6 +3,7 @@ package io.github.xiaoyureed.raincloud.core.common.model;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import com.alibaba.ttl.TransmittableThreadLocal;
 import io.github.xiaoyureed.raincloud.core.common.exception.SystemException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class LoginUserContext {
-    private static final ThreadLocal<LoginUserInfo<?>> USER_THREAD_LOCAL = new ThreadLocal<>();
+    private static final ThreadLocal<LoginUserInfo<?>> USER_THREAD_LOCAL = new TransmittableThreadLocal<>();
 
     public static void set(LoginUserInfo<?> user) {
         USER_THREAD_LOCAL.set(user);

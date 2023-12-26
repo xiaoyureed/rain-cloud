@@ -8,8 +8,11 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum CodeEnum {
+public enum CodeEnum implements IDict<String> {
 
+    /**
+     *
+     */
     SUCCESS("SUCCESS", "success"),
 
     ////// business error ///////
@@ -71,5 +74,5 @@ public enum CodeEnum {
 
 
     private final String code;
-    private final String text;
+    private final String label;
 }

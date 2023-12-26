@@ -30,7 +30,7 @@
 
         <dependency>
             <groupId>io.github.xiaoyureed.raincloud</groupId>
-            <artifactId>core-starter-cache</artifactId>
+            <artifactId>core-starter-redis</artifactId>
         </dependency>
 
         <dependency>
